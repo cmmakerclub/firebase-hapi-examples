@@ -1,13 +1,37 @@
 'use strict';
 
 const Hapi = require('hapi');
+const inert = require('inert');
+const Path = require('path');
+const Hoek = require('hoek');
+const Handlebars = require('handlebars');
+const Vision = require('vision');
+const Firebase = require('firebase');
 
-const handler = function (request, reply) {
+var myFirebaseRef = new Firebase("https://cmmc.firebaseio.com/");
+
+myFirebaseRef.update({"temp":"21"});
+
+const server = new Hapi.Server();
+
+server.connection({ port: 3000 });
+
+const handler_ = function (request, reply) {
     console.log(request.params);
     var parts = {
         temperature: request.params.temperature,
         humidity: request.params.humidity
     };
+
+    var tempRef = myFirebaseRef.child("temp");
+    var humidRef = myFirebaseRef.child("humid");
+
+    tempRef.push({
+      "time": request.params.temperature
+    });
+    humidRef.push({
+      "time": request.params.humidity
+    });
 
     // SAVE DB
     // SQLITE3
@@ -15,18 +39,15 @@ const handler = function (request, reply) {
     // MYSQL
     // MONGO
 
-    reply(parts);
+      reply(parts);
 };
-
-const server = new Hapi.Server();
-server.connection({ port: 3000 });
 
 server.route({
     method: 'GET',
-    path: '/api/{temperature}/{humidity}/{a}/{b}/{c}',
+    path: '/{temperature}/{humidity}/',
     config: {
-        handler: handler,
-        jsonp: 'callback'
+          handler: handler_,
+          jsonp: 'callback'
     }
 });
 
@@ -34,11 +55,33 @@ server.route({
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-        reply('Hello, world!');
+      reply('Hello, world!');
     }
 });
 
-server.start(function () {
-    console.log("SERVER STARTED: ", arguments);
+server.register(Vision, (err) => {
+
+    Hoek.assert(!err, err);
+
+    server.views({
+        engines: {
+            html: Handlebars
+        },
+        relativeTo: __dirname,
+        path: 'public',
+        helpersPath: 'public/src'
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/hello',
+        handler: function (request, reply) {
+            reply.view('index');
+        }
+    });
+
 });
 
+server.start(function () {
+    console.log("SERVER STARTED: ", server.info.uri);
+});
