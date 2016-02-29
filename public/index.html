@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>test</title>
+        <meta charset="utf-8"></meta>
+
+        <!-- AngularJS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+        <!-- Firebase -->
+        <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+        <!-- AngularFire -->
+        <script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
+
+        <script>
+          //Angular inject Firebase
+          var app = angular.module("sampleApp", ["firebase"]);
+
+          //mother of REF
+          var myFirebaseRef = new Firebase("https://cmmc.firebaseio.com/");
+          // Get a database reference to our posts
+          var ref = new Firebase("https://cmmc.firebaseio.com");
+          var tempRef = ref.child("temp");
+          var humidRef = ref.child("humid");
+
+
+          //get data temp
+          tempRef.on("child_added", function(snapshot) {
+            console.log(snapshot.val().time);
+          }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+          });
+          //get data humid
+          humidRef.on("child_added", function(snapshot) {
+            console.log(snapshot.val().time);
+          }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+          });
+
+          
+
+        </script>
+      </head>
+  <body>
+
+    <p> Hello </p>
+  </body>
+</html>

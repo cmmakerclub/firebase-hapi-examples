@@ -8,11 +8,9 @@ const Handlebars = require('handlebars');
 const Vision = require('vision');
 const Firebase = require('firebase');
 
-var myFirebaseRef = new Firebase("https://cmmc.firebaseio.com/");
-
-myFirebaseRef.update({"temp":"21"});
-
 const server = new Hapi.Server();
+
+var myFirebaseRef = new Firebase("https://cmmc.firebaseio.com/");
 
 server.connection({ port: 3000 });
 
@@ -26,12 +24,8 @@ const handler_ = function (request, reply) {
     var tempRef = myFirebaseRef.child("temp");
     var humidRef = myFirebaseRef.child("humid");
 
-    tempRef.push({
-      "time": request.params.temperature
-    });
-    humidRef.push({
-      "time": request.params.humidity
-    });
+    tempRef.push({"time": request.params.temperature});
+    humidRef.push({"time": request.params.humidity});
 
     // SAVE DB
     // SQLITE3
@@ -59,6 +53,17 @@ server.route({
     }
 });
 
+/*
+// Get a database reference to our posts
+var ref = new Firebase("https://cmmc.firebaseio.com");
+// Attach an asynchronous callback to read the data at our posts reference
+ref.on("value", function(snapshot) {
+  console.log(snapshot.val());
+}, function (errorObject) {
+  console.log("The read failed: " + errorObject.code);
+});
+*/
+
 server.register(Vision, (err) => {
 
     Hoek.assert(!err, err);
@@ -68,8 +73,7 @@ server.register(Vision, (err) => {
             html: Handlebars
         },
         relativeTo: __dirname,
-        path: 'public',
-        helpersPath: 'public/src'
+        path: 'public'
     });
 
     server.route({
