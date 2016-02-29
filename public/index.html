@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html >
   <head>
       <title>test</title>
         <meta charset="utf-8"></meta>
@@ -12,36 +12,48 @@
         <script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
 
         <script>
-          //Angular inject Firebase
-          var app = angular.module("sampleApp", ["firebase"]);
-
-          //mother of REF
-          var myFirebaseRef = new Firebase("https://cmmc.firebaseio.com/");
           // Get a database reference to our posts
           var ref = new Firebase("https://cmmc.firebaseio.com");
           var tempRef = ref.child("temp");
           var humidRef = ref.child("humid");
 
-
           //get data temp
           tempRef.on("child_added", function(snapshot) {
-            console.log(snapshot.val().time);
+              console.log(snapshot.val().time); //snapshot = obj
           }, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
           });
           //get data humid
           humidRef.on("child_added", function(snapshot) {
-            console.log(snapshot.val().time);
+              console.log(snapshot.val().time);
           }, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
           });
+          //Angular inject Firebase
+          var app = angular.module("sampleApp", ["firebase"]);
+          //firebaseArray receive reference, not string or obj
+          app.controller("sampleCtrl", ["$scope", "$firebaseArray",
+            function($scope, $firebaseArray) {
+              // download the data from a Firebase reference into a (pseudo read-only) array
+              // all server changes are applied in realtime
+              $scope.temps = $firebaseArray(tempRef);
+              $scope.humids = $firebaseArray(humidRef);
+              $scope.iid =$firebaseArray(ref);
 
-          
-
+              console.log($firebaseArray(ref));
+              console.log($scope.temps);
+              console.log($scope.temps.time); //undefined
+              console.log($scope.temps[0]); //undefined
+            }
+          ]);
         </script>
-      </head>
-  <body>
 
-    <p> Hello </p>
+  </head>
+
+  <body ng-app="sampleApp" ng-controller="sampleCtrl">
+      <div ng-repeat = "n in [42, 42, 43, 43] track by $index">{{n}} </div>
+      <h1 ng-repeat = "id in iid"> {{id.$id}} </h1>
+      <h1 ng-repeat="temp in temps"> {{temp.time}} <h/1>
+      <h1 ng-repeat="humid in humids">  </h1>
   </body>
 </html>
