@@ -53,17 +53,6 @@ server.route({
     }
 });
 
-/*
-// Get a database reference to our posts
-var ref = new Firebase("https://cmmc.firebaseio.com");
-// Attach an asynchronous callback to read the data at our posts reference
-ref.on("value", function(snapshot) {
-  console.log(snapshot.val());
-}, function (errorObject) {
-  console.log("The read failed: " + errorObject.code);
-});
-*/
-
 server.register(Vision, (err) => {
 
     Hoek.assert(!err, err);
@@ -85,6 +74,22 @@ server.register(Vision, (err) => {
     });
 
 });
+
+server.register(inert, (err) => {
+    if (err) {
+        throw err;
+    }
+    server.route({
+        method: 'GET',
+        path: '/test',
+        handler: function (request, reply) {
+            reply.file('./public/index.html');
+        }
+    });
+});
+
+
+
 
 server.start(function () {
     console.log("SERVER STARTED: ", server.info.uri);

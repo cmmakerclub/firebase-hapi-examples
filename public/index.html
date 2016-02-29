@@ -38,12 +38,6 @@
               // all server changes are applied in realtime
               $scope.temps = $firebaseArray(tempRef);
               $scope.humids = $firebaseArray(humidRef);
-              $scope.iid =$firebaseArray(ref);
-
-              console.log($firebaseArray(ref));
-              console.log($scope.temps);
-              console.log($scope.temps.time); //undefined
-              console.log($scope.temps[0]); //undefined
             }
           ]);
         </script>
@@ -51,9 +45,11 @@
   </head>
 
   <body ng-app="sampleApp" ng-controller="sampleCtrl">
-      <div ng-repeat = "n in [42, 42, 43, 43] track by $index">{{n}} </div>
-      <h1 ng-repeat = "id in iid"> {{id.$id}} </h1>
-      <h1 ng-repeat="temp in temps"> {{temp.time}} <h/1>
-      <h1 ng-repeat="humid in humids">  </h1>
+    <ul>
+      <p> Temp </p>
+      <li ng-repeat="temp in temps"> {{temp.time}} </li>
+      <p> Humid </p>
+      <li ng-repeat="humid in humids"> {{humid.time}} </li>
+    </ul>
   </body>
 </html>
