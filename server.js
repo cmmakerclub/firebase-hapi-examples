@@ -53,27 +53,6 @@ server.route({
     }
 });
 
-server.register(Vision, (err) => {
-
-    Hoek.assert(!err, err);
-
-    server.views({
-        engines: {
-            html: Handlebars
-        },
-        relativeTo: __dirname,
-        path: 'public'
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/hello',
-        handler: function (request, reply) {
-            reply.view('index');
-        }
-    });
-
-});
 
 server.register(inert, (err) => {
     if (err) {
